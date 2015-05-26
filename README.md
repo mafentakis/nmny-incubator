@@ -1,5 +1,6 @@
 # angularfire-seed — the seed for Angular+Firebase apps
 
+#test
 This derivative of [angular-seed](https://github.com/angular/angular-seed) is an application 
 skeleton for a typical [AngularFire](http://angularfire.com/) web app. You can use it to quickly 
 bootstrap your Angular + Firebase projects.
