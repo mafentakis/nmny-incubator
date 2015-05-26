@@ -1,0 +1,19 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "offers": {
+      "$offer": {
+        ".validate": "newData.hasChildren([ 'title','offeredBy'])",
+        "offeredBy": {
+          ".validate": "root.child('barters/' + newData.val()).exists()"
+        },
+        "internalTradedFor": {
+          "$offerId": {
+            ".validate": "root.child('offers/' + $offerId).exists()"
+          }
+        }
+      }
+    }
+  }
+}
