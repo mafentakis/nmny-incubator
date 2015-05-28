@@ -1,0 +1,28 @@
+
+<div class="panel-heading">
+    <h4>{{offer.title}}<br>
+        <small>{{offerId}} {{offer.created | date:'short'}}</small>
+    </h4>
+</div>
+<div class="panel-body">
+
+    <p ng-if="offer.description">{{offer.description}} </p>
+    <img class="img-responsive img-thumbnail" ng-if="offer.images[0]" ng-src="{{offer.images[0]}}">
+    <hr>
+    <p>
+        <span class="label label-primary" ng-show="offer.alien">{{offer.offeredBy}}</span>
+        <a href
+           ng-init="countProposals=countSwapProposals(offer)"
+           ng-show="countProposals>0"
+           ng-click="toogleSwpapProposalsDialog(offerId)"
+                > Tauschangebote <span class="badge">{{countProposals}}</span></a>
+    </p>
+
+    <div ng-show="swapProposalsDialogShown[offerId]">
+        <ul ng-if="offer.internalTradedFor" data-ng-repeat="(tradedByofferId, tradedByOffer) in offer.internalTradedFor">
+            <li>{{tradedByOffer.offer.title}}<small> von {{tradedByOffer.offer.offeredBy}}</small></li>
+        </ul>
+    </div>
+
+
+</div>

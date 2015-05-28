@@ -1,0 +1,14 @@
+<div class="media" data-ng-repeat="(tradedByofferId, tradedByOffer) in offer.internalTradedFor">
+    <div class="media-left">
+        <a href>
+            <img class="media-object" ng-src="{{tradedByOffer.offer.images[0]}}"
+                 alt="{{tradedByOffer.offer.title}}">
+        </a>
+    </div>
+    <div class="media-body">
+        <h5>{{tradedByOffer.offer.title}}
+            <small>von {{tradedByOffer.offer.offeredBy}}</small>
+        </h5>
+        <p ng-if="tradedByOffer.offer.description">{{tradedByOffer.offer.description}}</p>
+    </div>
+</div>
