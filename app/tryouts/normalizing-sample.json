@@ -1,0 +1,46 @@
+/*http://jsfiddle.net/mambolis/af1L725k/5/*/
+{
+  "nick":true,
+  "id":"-JltElXo6f7pwFzdDia8",
+  "title":"Gartenarbeit in Bonn und Umkreis",
+  "offer":{
+    "description":"ich liebe Gartenarbeiten",
+    "internalTradedFor":{
+      "-Jq4TFXY3LuotTBQIBeA":{
+        "created":1432586831133,
+        "difference":"0"
+      },
+      "-JqBqdT2meukA4w149v8":{
+        "created":1432587904472,
+        "difference":"0"
+      },
+      "-JqBzvYeWpveZOG5pI5l":{
+        "created":1432589697359,
+        "difference":"0"
+      },
+      "offer:lena:1234566":{
+        "difference":0
+      }
+    },
+    "offeredBy":"manolis",
+    "suggestedBy":{
+      "lena":true
+    },
+    "swapRequests":{
+      "swapRequest:fjdsASdfdf999":{
+        "created":1432810047314,
+        "offeredBy":"apollo",
+        "payWith":{
+          "item:easfdsad":{
+            "description":"Abmessungen bis 50x60 bis 80X80, Extras müssen abgesprochen werden",
+            "product":"-JqBzvYeWpveZOG5pI5l",
+            "quantity":4,
+            "unit":"Hours"
+          }
+        },
+        "resellAllowed":true
+      }
+    },
+    "title":"Gartenarbeit in Bonn und Umkreis"
+  }
+}
