@@ -2,6 +2,9 @@
  * Created by ceh6yu on 03.06.2015.
  */
 //npm install -g request
+    //set HTTP_PROXY=localhost:3128
+    //set HTTPS_PROXY=http://localhost:3128
+
 
 
 var request = require('request')
@@ -18,7 +21,9 @@ request(
         ]
     }
     , function (error, response, body) {
-        if(response.statusCode == 201){
+        console.log('error: '+ error);
+
+        if ((response)&&(response.statusCode == 201)){
             console.log('document saved as: http://mikeal.iriscouch.com/testjs/'+ rand)
         } else {
             console.log('error: '+ response.statusCode)
