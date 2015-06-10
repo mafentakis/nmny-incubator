@@ -1,5 +1,5 @@
 {
-  "firebase": "INSTANCE",
+  "firebase": "nomoney",
   "public": "app",
   "ignore": [
     "firebase.json",
