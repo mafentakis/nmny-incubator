@@ -16,45 +16,27 @@
         const globalOffersRef = new Firebase(FBURL + '/offers/');
         const globalSwapRequestRef = new Firebase(FBURL + '/swapRequests');
 
-
-
         $scope.otherOffers = {};
 
 
         function readOtherOffers() {
-            function actualizeScopeOffers(offersSnap, profile) {
-                var key = offersSnap.key();
-
-                var offer = offersSnap.val();
-                if (offer.offeredBy != profile.name) {
-                    $scope.otherOffers[key] = offer;
-                }
-
-                /*
-                * denormalize offer.swapRequests.requestId
-                */
-                angular.forEach(offer.swapRequests, function (swapRequestProperties, swapRequestId) {
-                    globalSwapRequestRef.child(swapRequestId).on('value', function (swapRequestSnap) {
-                        console.log("processing order "+key);
-                        if (swapRequestSnap.val() != null) {
-                            var swapRequest= swapRequestSnap.val();
-                            swapRequestProperties.swapRequest = swapRequest;
-                        }
-                    });
-                });
-
-
-            }
-
             profileRef.on("value", function (profileSnapshot) {
                     var profile = profileSnapshot.val();
-                    globalOffersRef.on('child_added', function (offersSnap) {
-                        actualizeScopeOffers(offersSnap, profile);
+                    offersRef.on('child_added', function (offersSnap) {
+                        var key = offersSnap.key();
+                        var offer = offersSnap.val();
+                        if (offer.offeredBy != profile.name) {
+                            $scope.otherOffers[key] = offer;
+                        }
                     });
-                    globalOffersRef.on('child_changed', function (offersSnap) {
-                       actualizeScopeOffers(offersSnap,profile);
+                    offersRef.on('child_changed', function (offersSnap) {
+                        var key = offersSnap.key();
+                        var offer = offersSnap.val();
+                        if (offer.offeredBy != profile.name) {
+                            $scope.otherOffers[key] = offer;
+                        }
                     });
-                    globalOffersRef.on('child_removed', function (offersSnap) {
+                    offersRef.on('child_removed', function (offersSnap) {
                         var key = offersSnap.key();
                         $scope.otherOffers[key] = null;
                     });
@@ -75,12 +57,12 @@
          */
         function readAlienOffers(offer) {
             angular.forEach(offer.internalTradedFor, function (tradeProperties, offerId) {
-                globalOffersRef.child(offerId).on('value', function (offerSnap) {
+                offersRef.child(offerId).on('value', function (offerSnap) {
                     if (offerSnap.val() != null) {
                         var offer = offerSnap.val();
                         offer.alien = true;
                         $scope.offers[offerId] = offer;
-                        tradeProperties.offer = offer;
+                        tradeProperties.offer=offer;
                     }
                 });
             });
@@ -93,7 +75,7 @@
          */
         function readOfferByOfferId(offerId) {
             /*will be triggered*/
-            globalOffersRef.child(offerId).on('value', function (offerSnap) {
+            offersRef.child(offerId).on('value', function (offerSnap) {
                 var offer = offerSnap.val();
                 console.log('offer:' + offer);
                 // trigger $digest/$apply so Angular syncs the DOM
@@ -107,7 +89,7 @@
                         readAlienOffers(offer);
                     }
                 });
-            });//globalOffersRef.child
+            });//offersRef.child
         }
 
         /*readOfferByOfferId*/
@@ -150,58 +132,13 @@
             else {
                 $scope.swapDialogs[otherOfferId] = true
             }
-            return "hallo";
-        }
-
-
-        $scope.createSwapRequestFacade = function (ofterOfferId) {
-            var swapRequestFacade = {
-                item: {
-                    product: "null",
-                    quantity: "",
-                    unit: ""
-                },
-                visibleDialog:true,
-                save: function () {
-                    alert(angular.toJson(this.item));
-
-                    var items = {};
-                    items["item:0"]=this.item;
-                    var swapRequestKey = "swapReq:"+generatePushID();
-
-                    var swapRequestRef = new Firebase(FBURL + '/swapRequests/' + swapRequestKey);
-
-                    swapRequestRef.set(
-                        { created: Firebase.ServerValue.TIMESTAMP,
-                          offeredBy:$scope.profile.name,
-                          payWith: items
-
-                        }
-                        , function (error) {
-                            if (error) {
-                                alert("error saving offer " + error);
-                            }
-                            console.log("swap request saved: "+swapRequestRef.key());
-                        });
-
-                    var offerSwapRequestRef = new Firebase(FBURL + '/offers/' + ofterOfferId + "/swapRequests/" + swapRequestKey);
-                    offerSwapRequestRef.set({created: Firebase.ServerValue.TIMESTAMP},function(error){
-                        if (error) {
-                            alert("error saving offer " + error);
-                        }
-                        console.log("swap request saved in offer: "+swapRequestRef.key());
-                    });
-
-                }
-            }
-            return swapRequestFacade;
         }
 
 
         /**
          * gibt true wenn die offerId
-         * @param otherOffer
- * @param offerId das eigene produkt
+         * @param offer Fremdes Produkt
+         * @param offerId das eigene produkt
          * @returns {boolean}
          */
         $scope.isOfferAllreadyUsed = function (otherOffer, offerId) {
@@ -215,9 +152,9 @@
             return true;
         };
 
-        $scope.swapProposalsDialogShown = {};
-        $scope.toogleSwpapProposalsDialog = function (offerId) {
-            $scope.swapProposalsDialogShown[offerId] = !$scope.swapProposalsDialogShown[offerId];
+        $scope.swapProposalsDialogShown={};
+        $scope.toogleSwpapProposalsDialog=function(offerId){
+            $scope.swapProposalsDialogShown[offerId]=!$scope.swapProposalsDialogShown[offerId] ;
         }
 
 
@@ -226,6 +163,17 @@
                 return 0;
             }
             return Object.keys(offer.internalTradedFor).length;
+        };
+
+        $scope.createSwapProposal = function (targetOfferId, offerId) {
+            var internalTradedFors = new Firebase(FBURL + '/offers/' + targetOfferId + "/internalTradedFor/" + offerId);
+            internalTradedFors.set(
+                {difference: "0", created: Firebase.ServerValue.TIMESTAMP}
+                , function (error) {
+                    if (error) {
+                        console.log("error saving offer " + error);
+                    }
+                });
         };
 
         $scope.dropSwapProposal = function (otherOfferId, targetOfferId) {
@@ -244,7 +192,7 @@
          * erstellt ein neues Angebot (im Namen des angemeldeten Benutzers)
          */
         $scope.createNewOffer = function () {
-            var newOfferRef = globalOffersRef.push();
+            var newOfferRef = offersRef.push();
             $scope.newOffer.created = Firebase.ServerValue.TIMESTAMP;
             var profile = $scope.profile;
             if (profile === null) {
