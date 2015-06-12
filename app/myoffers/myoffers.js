@@ -118,9 +118,7 @@
             });
 
 
-        function resetNewOffer() {
-            $scope.newOffer = {title: "", offeredBy: ""};
-        }
+
 
 
         $scope.swapDialogs = {};
@@ -199,7 +197,7 @@
             }
             $scope.newOffer.offeredBy = profile.name;
 
-            var orderAsJson = angular.toJson($scope.newOffer);
+            var orderAsJson = angular.toJson(newOffer);
             newOfferRef.set($scope.newOffer, function (error) {
                 if (!error) {
                     var newId = newOfferRef.key();
