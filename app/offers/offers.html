@@ -1,47 +1,82 @@
-
-<h2 class="status good" ng-show="loggedIn">Offers of  {{profile.name}}.</h2>
+<h2 class="status good" ng-show="loggedIn">Offers of {{profile.name}}.</h2>
 <p class="status" ng-hide="loggedIn">Welcome. You are not <a href="#/login">logged in</a></p>
 
 
 <ul data-ng-repeat="(offerId, offer) in offers">
-    <li>{{offerId}}: {{offer.title}} (von:{{offer.offeredBy}})<i ng-show="offer.alien">(alien) </i>
-        <a  href ng-if="countSwapProposals(offer)>0"
-                 ng-click="toogleSwpapProposalsDialog(offerId)"> {{ countSwapProposals(offer) }} Tauschangebote</span></a>
-        <div ng-show="swapProposalsDialogShown[offerId]"
-             style="padding: 10px; width:50%;  border: solid 1px #808080; box-shadow: 0 0 10px rgba(0,0,0,0.6); -moz-box-shadow: 0 0 10px rgba(0,0,0,0.6); -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.6); -o-box-shadow: 0 0 10px">
-            <ul ng-if="offer.internalTradedFor" data-ng-repeat="(tradedByofferId, tradedByOffer) in offer.internalTradedFor">
-                <li>{{tradedByOffer.offer.title}} (von {{tradedByOffer.offer.offeredBy}})</li>
-             </ul>
+    <li>
+        <h5 title="{{offerId}}">{{offer.title}}
+        </h5>
+        (von:{{offer.offeredBy}})<i ng-show="offer.alien">(alien)</i>
+        <small ng-if="offer.description"><br>{{offer.description}}</small>
+        <small ng-if="offer.unit"><br>Einheit: {{offer.unit}}</small>
+        <div ng-if="countSwapProposals(offer)>0">
+            <a href
+               ng-click="toogleSwpapProposalsDialog(offerId)"> {{ countSwapProposals(offer) }}
+                Tauschangebote</a>
+
+            <div ng-show="swapProposalsDialogShown[offerId]"
+                 style="padding: 10px; width:50%;  border: solid 1px #808080; box-shadow: 0 0 10px rgba(0,0,0,0.6); -moz-box-shadow: 0 0 10px rgba(0,0,0,0.6); -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.6); -o-box-shadow: 0 0 10px">
+                <ul ng-if="offer.internalTradedFor"
+                    data-ng-repeat="(tradedByofferId, tradedByOffer) in offer.internalTradedFor">
+                    <li>{{tradedByOffer.offer.title}} (von {{tradedByOffer.offer.offeredBy}})</li>
+                </ul>
+            </div>
         </div>
 </ul>
 
 
 <h2>other offres</h2>
 <div>
-<ul data-ng-repeat="(otherOfferId, otherOffer) in otherOffers">
-    <p><pre>{{otherOfferId}}</pre>: {{otherOffer.title}} (von:{{otherOffer.offeredBy}})
+    <ul data-ng-repeat="(otherOfferId, otherOffer) in otherOffers">
+        <p>
+        <pre>{{otherOfferId}}</pre>
+        : {{otherOffer.title}} (von:{{otherOffer.offeredBy}})
 
 
-    <a href ng-click="toggleSwapDialog(otherOfferId)">tausch anbieten</a></p>
+        <a href ng-click="swapRequestFacade=createSwapRequestFacade(otherOfferId)">tausch anbieten</a></p>
 
-    <div ng-show="swapDialogs[otherOfferId]"
-       style="padding: 10px; width:50%;  border: solid 1px #808080; box-shadow: 0 0 10px rgba(0,0,0,0.6); -moz-box-shadow: 0 0 10px rgba(0,0,0,0.6); -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.6); -o-box-shadow: 0 0 10px">
-        tausche "{{otherOffer.title}}" gegen
+        <div ng-show="swapRequestFacade.visibleDialog"
+             style="padding: 10px; width:50%;  border: solid 1px #808080; box-shadow: 0 0 10px rgba(0,0,0,0.6); -moz-box-shadow: 0 0 10px rgba(0,0,0,0.6); -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.6); -o-box-shadow: 0 0 10px">
 
-        <select ng-model="selectedOwnOfferId">
-            <option>-- choose color --</option>
-            <option ng-repeat="(offerId, offer) in offers" ng-value="offerId" ng-show="isOfferAllreadyUsed(otherOffer,offerId)">{{offer.title}}</option>
-        </select>
+            tausche
 
-        <button ng-click="createSwapProposal(otherOfferId,selectedOwnOfferId)">anbieten</button>
-        <button ng-click="swapDialogs[otherOfferId]=null">schließen</button><br>
+            "{{otherOffer.title}}" gegen
 
-        <ul data-ng-repeat="(subOfferId,subOfferProperties) in otherOffer.internalTradedFor ">
-            <li ng-show="offers[subOfferId]!=null">{{subOfferId}}**{{offers[subOfferId].title}} <a href ng-click="dropSwapProposal(otherOfferId,subOfferId)">entfernen</a> </li>
-        </ul>
+            <select ng-model="swapRequestFacade.item.product">
+                <option value="null">-- Produkt wählen --</option>
+                <option ng-repeat="(offerId, offer) in offers" ng-value="offerId"
+                        ng-show="isOfferAllreadyUsed(otherOffer,offerId)">{{offer.title}}
+                </option>
+            </select>
 
-    </div>
-</ul>
+            <button ng-click="swapRequestFacade.save()">anbieten</button>
+
+            <h4>laufende Anfragen</h4>
+            <ul>
+                <li data-ng-repeat="(swapRequestId,swapRequestPropery) in otherOffer.swapRequests ">
+                    <p title="{{swapRequestPropery|json}}">
+                        {{swapRequestPropery.swapRequest.payWith['item:0'].quantity}}
+                        {{swapRequestPropery.swapRequest.payWith['item:0'].unit}}
+                        {{offers[swapRequestPropery.swapRequest.payWith['item:0'].product].title}}
+                        <br>
+                        <small> Erstellt: {{swapRequestPropery.created | date:'short'}}</small>
+                    </p>
+                </li>
+            </ul>
+
+            <h4>angenommene</h4>
+            <ul data-ng-repeat="(subOfferId,subOfferProperties) in otherOffer.internalTradedFor ">
+                <li ng-show="offers[subOfferId]!=null">{{subOfferId}}**{{offers[subOfferId].title}} <a href
+                                                                                                       ng-click="dropSwapProposal(otherOfferId,subOfferId)">entfernen</a>
+                </li>
+            </ul>
+
+            <hr>
+            <button ng-click="swapRequestFacade.visibleDialog=false">schließen</button>
+            <br>
+
+        </div>
+    </ul>
 </div>
 <hr>
 <div>
@@ -49,11 +84,25 @@
         <fieldset>
             <label>
                 <span>title</span>
-                <input type="text" ng-model="newOffer.title"/>
+                <input type="text" size="100" ng-model="newOffer.title"/>
+            </label>
+            <label>
+                <span>Beschreibung</span>
+                <textarea cols="100" rows="4" ng-model="newOffer.description"></textarea>
+            </label>
+            <label>
+                <span>Einheiten</span>
+                <textarea cols="100" rows="4" ng-model="newOffer.unit"></textarea>
+                <ul>
+                    <li>Tanzunterricht,Musikunterricht: 1 Einheit= 1 Stunde - Richtwert 30-40 Eur</li>
+                    <li>Motorradmiete: 1 Einheit = 1 Tag</li>
+                </ul>
+
             </label>
             <button ng-click="createNewOffer()">createNew</button>
 
             <p class="error" ng-show="err">{{err}}</p>
+
             <p class="good" ng-show="msg">{{msg}}</p>
         </fieldset>
     </form>
