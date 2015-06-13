@@ -17,7 +17,6 @@
         var globalSwapRequestRef = new Firebase(FBURL + '/swapRequests');
 
 
-
         $scope.otherOffers = {};
 
         function readOtherOffers() {
@@ -30,15 +29,16 @@
                 }
 
                 /*
-                * denormalize offer.swapRequests.requestId
-                */
+                 * denormalize offer.swapRequests.requestId
+                 */
                 angular.forEach(offer.swapRequests, function (swapRequestProperties, swapRequestId) {
                     globalSwapRequestRef.child(swapRequestId).on('value', function (swapRequestSnap) {
-                        console.log("processing swap request "+swapRequestId+" for order "+key);
+                        console.log("processing swap request " + swapRequestId + " for order " + key);
                         if (swapRequestSnap.val() != null) {
-                            var swapRequest= swapRequestSnap.val();
+                            var swapRequest = swapRequestSnap.val();
                             swapRequestProperties.swapRequest = swapRequest;
                         }
+
                     });
                 });
 
@@ -51,7 +51,7 @@
                         actualizeScopeOffers(offersSnap, profile);
                     });
                     globalOffersRef.on('child_changed', function (offersSnap) {
-                       actualizeScopeOffers(offersSnap,profile);
+                        actualizeScopeOffers(offersSnap, profile);
                     });
                     globalOffersRef.on('child_removed', function (offersSnap) {
                         var key = offersSnap.key();
@@ -117,7 +117,7 @@
             offersRef.on('child_added', function (offersSnap) {
                 // fetch the book and put it into our list
                 var offerId = offersSnap.key();
-               // console.log('offer:' + offerId);
+                // console.log('offer:' + offerId);
                 readOfferByOfferId(offerId);
             });
         }
@@ -136,62 +136,90 @@
             });
 
 
-
-        $scope.empty = function(object){
-            if (object){
-                return Object.keys(object).length==0;
+        $scope.empty = function (object) {
+            if (object) {
+                return Object.keys(object).length == 0;
             }
             return true;
+        },
+
+            $scope.keyCount = function (object) {
+                if (object) {
+                    return Object.keys(object).length;
+                }
+                return 0;
+            }
+
+        function saveReference(firebaseRef){
+            firebaseRef.set({created: Firebase.ServerValue.TIMESTAMP}, function (error) {
+                if (error) {
+                    alert("error saving reference " +firebaseRef.toString()+" error:"+error);
+                }
+                console.log("saved reference " +firebaseRef.toString()+" error:"+error);
+            });
+
+
         }
 
+        $scope.createSwapRequestsFacade2=function(offerId,offer){
+            return {
+                visibleDialog:false,
 
-        $scope.createSwapRequestFacade = function (otherOfferId,otherOffer) {
+                closeDialog:function(){
+                    this.visibleDialog=false;
+                },
+                showSwaps:function(){
+                    this.visibleDialog=true;
+                }
+
+
+            }
+        };
+
+
+        $scope.createSwapRequestFacade = function (otherOfferId, otherOffer) {
             var swapRequestFacade = {
-                his :{
-                    offerId:otherOfferId,
-                    unit:otherOffer.unit,
-                    amount:1
+                his: {
+                    offerId: otherOfferId,
+                    unit: otherOffer.unit,
+                    amount: 1
                 },
                 item: {
                     offerId: "null",
                     unit: "",
-                    amount:1
+                    amount: 1
 
                 },
-                visibleDialog:true,
+                visibleDialog: true,
                 save: function () {
-                    console.log("saving swap request: "+angular.toJson(this));
+                    console.log("saving swap request: " + angular.toJson(this));
 
-                    if (!this.item.offerId){
+                    if (!this.item.offerId) {
                         throw "item.offerId expected";
                     }
                     this.item.unit = $scope.offers[this.item.offerId].unit;
 
                     //only one item for swapping supported
-                    var swapRequestKey = "swapReq:"+generatePushID();
+                    var swapRequestKey = "swapReq:" + generatePushID();
 
                     var swapRequestRef = new Firebase(FBURL + '/swapRequests/' + swapRequestKey);
 
                     swapRequestRef.set(
-                        { created: Firebase.ServerValue.TIMESTAMP,
-                          offeredBy:$scope.profile.name,
-                          payWith: this.item,
-                          payFor:this.his
+                        {
+                            created: Firebase.ServerValue.TIMESTAMP,
+                            offeredBy: $scope.profile.name,
+                            payWith: this.item,
+                            payFor: this.his
                         }
                         , function (error) {
                             if (error) {
                                 alert("error saving offer " + error);
                             }
-                            console.log("swap request saved: "+swapRequestRef.key());
+                            console.log("swap request saved: " + swapRequestRef.key());
                         });
+                    saveReference(new Firebase(FBURL + '/offers/' + otherOfferId + "/swapRequests/" + swapRequestKey));
+                    saveReference(new Firebase(FBURL + '/offers/' + this.item.offerId + "/swapRequests/" + swapRequestKey));
 
-                    var offerSwapRequestRef = new Firebase(FBURL + '/offers/' + otherOfferId + "/swapRequests/" + swapRequestKey);
-                    offerSwapRequestRef.set({created: Firebase.ServerValue.TIMESTAMP},function(error){
-                        if (error) {
-                            alert("error saving offer " + error);
-                        }
-                        console.log("swap request saved in offer: "+swapRequestRef.key());
-                    });
 
                 }
             }
@@ -231,32 +259,22 @@
             return Object.keys(offer.internalTradedFor).length;
         };
 
-        $scope.dropSwapProposal = function (otherOfferId, targetOfferId) {
-            var internalTradedFors = new Firebase(FBURL + '/offers/' + otherOfferId + "/internalTradedFor/" + targetOfferId);
-            internalTradedFors.remove(
-                function (error) {
-                    if (error) {
-                        console.log("error removing proposal " + error);
-                    }
-                });
-        };
-
-        function dropReference(ref,key){
+        function dropReference(ref, key) {
             var firebaseRef = ref.child(key);
             firebaseRef.set(null, function (error) {
                 if (error) {
                     alert(error);
                 }
                 else {
-                    console.log("droped reference to "+key+" firebaseRef, "+firebaseRef.toString());
+                    console.log("droped reference to " + key + " firebaseRef, " + firebaseRef.toString());
                 }
             });
         }
 
 
-        $scope.dropSwapRequest = function (swapRequestId,offerId){
-            dropReference(globalSwapRequestRef,swapRequestId);
-            dropReference(globalOffersRef.child(offerId).child("swapRequests"),swapRequestId);
+        $scope.dropSwapRequest = function (swapRequestId, offerId) {
+            dropReference(globalSwapRequestRef, swapRequestId);
+            dropReference(globalOffersRef.child(offerId).child("swapRequests"), swapRequestId);
         };
 
 
@@ -264,15 +282,27 @@
          * drops Offers and all references
          * @param offerId
          */
-        $scope.dropOffer= function (offerId) {
+        $scope.dropOffer = function (offerId) {
+            if (!confirm("soll diese Offer wirklich gelsöcht werden?")){
+               return;
+            }
 
+            globalOffersRef.child(offerId).once("value", function (offerSnap) {
+                var offer = offerSnap.val();
+                if (offer != null) {
+                    angular.forEach(offer.swapRequests, function (swapRequestProperties, swapRequestId) {
+                        dropReference(globalSwapRequestRef, swapRequestId);
 
+                    })
+                }
 
-            dropReference(globalOffersRef,offerId);
+            });
+
+            dropReference(globalOffersRef, offerId);
             //TODO ist nicht so einfach: dropReference(globalSwapRequestRef,??ID);
 
             var offersUrl = FBURL + '/barters/' + profile.name + '/offers';
-            dropReference( new Firebase(offersUrl),offerId);
+            dropReference(new Firebase(offersUrl), offerId);
 
             //todo better use promisses here
         };
@@ -283,7 +313,7 @@
          * erstellt ein neues Angebot (im Namen des angemeldeten Benutzers)
          */
         $scope.createNewOffer = function (newOffer) {
-            $scope.statusText ="wird gespeichert";
+            $scope.statusText = "wird gespeichert";
 
             var newOfferRef = globalOffersRef.push();
             newOffer.created = Firebase.ServerValue.TIMESTAMP;
@@ -305,17 +335,17 @@
                     });
                     console.log("offer saved: " + angular.toJson(newOffer) + " in " + newOfferRef.toString());
                     $scope.statusText = "offer saved: " + newOfferRef.toString();
-                    newOffer.title="";
-                    newOffer.description="";
-                    newOffer.unit="";
-                   $timeout(function () {
-                       $scope.statusText = "";
+                    newOffer.title = "";
+                    newOffer.description = "";
+                    newOffer.unit = "";
+                    $timeout(function () {
+                        $scope.statusText = "";
 
-                    },2000);
+                    }, 2000);
 
                 }
                 else {
-                    $scope.statusText ="error saving offer " + error;
+                    $scope.statusText = "error saving offer " + error;
                     console.log("error saving offer " + error);
                 }
             });//newOffer.set
