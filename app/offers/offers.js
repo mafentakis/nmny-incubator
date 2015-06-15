@@ -112,7 +112,7 @@
         /*readOfferByOfferId*/
 
         function readOwnOffers(profile) {
-            const offersUrl = FBURL + '/barters/' + profile.name + '/offers';
+            var offersUrl = FBURL + '/barters/' + profile.name + '/offers';
             var offersRef = new Firebase(offersUrl);
             offersRef.on('child_added', function (offersSnap) {
                 // fetch the book and put it into our list
@@ -296,7 +296,7 @@
             newOfferRef.set(newOffer, function (error) {
                 if (!error) {
                     var newId = newOfferRef.key();
-                    const bartersUrl = FBURL + '/barters/' + profile.name + '/offers/' + newId;
+                    var bartersUrl = FBURL + '/barters/' + profile.name + '/offers/' + newId;
                     var bartersRef = new Firebase(bartersUrl);
                     bartersRef.set("true", function (error) {
                         if (error) {
