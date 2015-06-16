@@ -15,10 +15,10 @@
 
   <ul class="menu">
     <li><a href="#/home">home</a></li>
-    <li><a href="#/chat">chat</a></li>
     <li ng-hide="loggedIn"><a href="#/login">login</a></li>
     <li ng-show="loggedIn"><a href="#/account">account</a></li>
       <li ng-show="loggedIn"><a href="#/offers">offers</a></li>
+      <li ng-show="loggedIn"><a href="#/my">my</a></li>
   </ul>
 
   <div ng-view></div>
@@ -55,9 +55,13 @@
 
   <script src="home/home.js"></script>
   <script src="account/account.js"></script>
-  <script src="chat/chat.js"></script>
   <script src="login/login.js"></script>
+
+  <script src="offers/my.js"></script>
+
   <script src="offers/offers.js"></script>
+
+
   <script src="generate-pushid.js"></script>
 </body>
 </html>
