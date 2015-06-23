@@ -1,7 +1,26 @@
 
 
-<div class="container" id="main">
-    <div class="row">
+
+
+
+
+
+
+
+
+ <div class="container" id="main">
+     <div class="row"  data-ng-show="loading">
+         <div class="col-md-4 col-sm-6">
+             <div class="panel panel-default">
+                 <div class="panel-body">
+                 <span> loading  <i class="fa fa-spinner fa-spin"></i></span>
+                     </div>
+             </div>
+         </div>
+     </div>
+
+
+     <div class="row">
 
         <div class="col-md-4 col-sm-6">
             <div class="panel panel-default" data-ng-repeat="(offerId, offer) in offers" ng-if="$index%3==0"

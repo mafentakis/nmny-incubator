@@ -2,7 +2,7 @@
  * Created by ceh6yu on 03.06.2015.
  */
 //npm install -g request
-    //set HTTP_PROXY=localhost:3128
+    //set HTTP_PROXY=http://localhost:3128
     //set HTTPS_PROXY=http://localhost:3128
 
 
