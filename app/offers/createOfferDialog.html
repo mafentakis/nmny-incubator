@@ -1,0 +1,28 @@
+
+<form ng-init="newOffer={}">
+    {{statusText}}
+    <fieldset>
+        <label>
+            <span>title</span>
+            <input type="text" size="100" ng-model="newOffer.title"/>
+        </label>
+        <label>
+            <span>Beschreibung</span>
+            <textarea cols="100" rows="4" ng-model="newOffer.description"></textarea>
+        </label>
+        <label>
+            <span>Einheit</span>
+            <input type="text" size="100" ng-model="newOffer.unit" />
+            <ul>
+                <li>Tanzunterricht,Musikunterricht: 1 Einheit= 1 Stunde</li>
+                <li>Motorradmiete: 1 Einheit = 1 Tag</li>
+            </ul>
+
+        </label>
+        <button ng-click="createNewOffer(newOffer,status)">createNew</button>
+
+        <p class="error" ng-show="err">{{err}}</p>
+
+        <p class="good" ng-show="msg">{{msg}}</p>
+    </fieldset>
+</form>

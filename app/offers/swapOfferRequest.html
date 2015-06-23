@@ -1,0 +1,24 @@
+
+
+
+
+<span style="font-size:120%">tausche&nbsp;</span><input ng-model="swapRequestFacade.his.amount"  type="text" size="2" >
+&nbsp;
+<span style="font-size:120%">X</span>
+"{{otherOffer.unit}}" "{{otherOffer.title}}"
+&nbsp;
+<span style="font-size:120%">gegen</span>
+<br>
+<input ng-model="swapRequestFacade.item.amount"  type="text" size="2" >
+&nbsp;
+<span style="font-size:120%">X</span>
+&nbsp;
+<select ng-model="swapRequestFacade.item.offerId">
+    <option value="null">-- Produkt wählen --</option>
+    <option ng-repeat="(offerId, offer) in offers" value="{{offerId}}"
+             ng-show="otherOffer.offeredBy!=offer.offeredBy">{{offer.title}} <small>(Einheit:{{offer.unit}})</small>
+    </option>
+</select>
+
+<button ng-click="swapRequestFacade.save()">anbieten</button>
+

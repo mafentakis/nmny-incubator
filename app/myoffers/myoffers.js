@@ -13,7 +13,7 @@
         $scope.offers = offers;
 
         /*root where are offers are stored*/
-        const offersRef = new Firebase(FBURL + '/offers/');
+        var offersRef = new Firebase(FBURL + '/offers/');
 
         $scope.otherOffers = {};
 
@@ -94,7 +94,7 @@
         /*readOfferByOfferId*/
 
         function readOwnOffers(profile) {
-            const offersUrl = FBURL + '/barters/' + profile.name + '/offers';
+            var offersUrl = FBURL + '/barters/' + profile.name + '/offers';
             var offersRef = new Firebase(offersUrl);
             offersRef.on('child_added', function (offersSnap) {
                 // fetch the book and put it into our list
@@ -118,9 +118,7 @@
             });
 
 
-        function resetNewOffer() {
-            $scope.newOffer = {title: "", offeredBy: ""};
-        }
+
 
 
         $scope.swapDialogs = {};
@@ -199,11 +197,11 @@
             }
             $scope.newOffer.offeredBy = profile.name;
 
-            var orderAsJson = angular.toJson($scope.newOffer);
+            var orderAsJson = angular.toJson(newOffer);
             newOfferRef.set($scope.newOffer, function (error) {
                 if (!error) {
                     var newId = newOfferRef.key();
-                    const bartersUrl = FBURL + '/barters/' + profile.name + '/offers/' + newId;
+                    var bartersUrl = FBURL + '/barters/' + profile.name + '/offers/' + newId;
                     var bartersRef = new Firebase(bartersUrl);
                     bartersRef.set("true", function (error) {
                         if (error) {
