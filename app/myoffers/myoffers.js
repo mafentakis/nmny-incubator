@@ -14,6 +14,13 @@
 
         /*root where are offers are stored*/
         var offersRef = new Firebase(FBURL + '/offers/');
+        $scope.loading = true;
+        var offersPromisse = $firebaseObject(offersRef);
+
+        offersPromisse.$loaded().then(function(data){
+            $scope.loading=false;
+        });
+
 
         $scope.otherOffers = {};
 
