@@ -38,11 +38,8 @@
                             var swapRequest = swapRequestSnap.val();
                             swapRequestProperties.swapRequest = swapRequest;
                         }
-
                     });
                 });
-
-
             }
 
             profileRef.on("value", function (profileSnapshot) {

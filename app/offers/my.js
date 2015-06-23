@@ -3,19 +3,92 @@
 
     var app = angular.module('myApp.ownOffers', ['firebase.auth', 'firebase', 'firebase.utils', 'ngRoute']);
 
-    app.controller('MyOwnOffersCtrl', ['$scope', '$timeout', 'fbutil', 'user', '$firebaseObject', 'FBURL', function ($scope, $timeout, fbutil, user, $firebaseObject, FBURL) {
+    app.controller('MyOwnOffersCtrl', ['$scope', '$timeout', 'fbutil', 'user', '$firebaseObject', 'FBURL','$q', function ($scope, $timeout, fbutil, user, $firebaseObject, FBURL,$q) {
         var profileRef = fbutil.ref('users', user.uid);
 
         var profile = $firebaseObject(profileRef);
         profile.$bindTo($scope, 'profile');
 
-        profileRef.on("value", function (profileSnapshot) {
-                var profile = profileSnapshot.val();
-                console.log("own offfer page:" + profile.name);
-            }/*profileRef.on*/
-            , function (errorObject) {
-                console.log("The read failed: " + errorObject.code);
+
+        $scope.offers = {};
+
+        function load(slaveRef,indexRef,childCallback){
+            slaveRef.$loaded().then(function(object){
+                angular.forEach(object, function (childObject, key) {
+                    var childFBO = $firebaseObject(indexRef.child(key));
+
+                    childCallback(childFBO,key);
+
+                });
             });
+        }
+
+        var globalOfferRef = fbutil.ref('offers');
+
+        profile.$loaded().then(function(){
+            var ownOffersSlave = $firebaseObject(fbutil.ref('barters', profile.name,'offers'));
+
+
+            load(ownOffersSlave,globalOfferRef,function(offer,key){
+                $scope.offers[key] = offer;
+                var swapRequestsSlave = $firebaseObject(fbutil.ref('barters', profile.name,'offers',key,'swapRequests'));
+                load(swapRequestsSlave,globalOfferRef,function(offer,key){
+
+                });
+            });
+
+
+            $scope.createSwapRequestsFacade2=function(offerId,offer){
+                return {
+                    visibleDialog:false,
+
+                    closeDialog:function(){
+                        this.visibleDialog=false;
+                    },
+                    showSwaps:function(){
+                        this.visibleDialog=true;
+                    }
+
+
+                }
+            };
+
+
+            /*      offersO.$loaded().then(function(){
+             });*/
+
+            $scope.keyCount = function (object) {
+                if (object) {
+                    return Object.keys(object).length;
+                }
+                return 0;
+            }
+
+        });
+
+
+
+
+        /*
+
+
+        $q.all( [profile.$loaded(),
+            offers.$loaded()] ).then(
+            function(){
+                console.log("loaded record", profile.$id, profile.name);
+                console.log(angular.toJson(offers));
+            }
+        );
+
+         // to take an action after the data loads, use $loaded() promise
+         profile.$loaded().then(function() {
+         console.log("loaded record", profile.$id, profile.name);
+         });
+         */
+
+
+
+
     }
     ]);
 
