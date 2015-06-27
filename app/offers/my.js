@@ -1,54 +1,101 @@
 (function (angular) {
     "use strict";
 
-    var app = angular.module('myApp.ownOffers', ['firebase.auth', 'firebase', 'firebase.utils', 'ngRoute']);
+    /**
+     * @typedef {Object} Offer
+     * @property {String} title
+     * @property {String} description
+     * @property {String[]} swapRequests
+     */
 
-    app.controller('MyOwnOffersCtrl', ['$scope', '$timeout', 'fbutil', 'user', '$firebaseObject', 'FBURL','$q', function ($scope, $timeout, fbutil, user, $firebaseObject, FBURL,$q) {
-        var profileRef = fbutil.ref('users', user.uid);
 
-        var profile = $firebaseObject(profileRef);
-        profile.$bindTo($scope, 'profile');
+    var app = angular.module('myApp.ownOffers', ['daos', 'firebase.auth', 'firebase', 'firebase.utils', 'ngRoute']);
+
+    app.controller('MyOwnOffersCtrl', ['swapDao', '$scope', '$timeout', 'fbutil', 'user', '$firebaseObject', 'FBURL', '$q',
+        function (swapDao, $scope, $timeout, fbutil, user, $firebaseObject, FBURL, $q) {
+            var profileRef = fbutil.ref('users', user.uid);
+
+            var profile = $firebaseObject(profileRef);
+            profile.$bindTo($scope, 'profile');
 
 
-        $scope.offers = {};
+            /** Offers[]*/
+            $scope.offers = {};
 
-        function load(slaveRef,indexRef,childCallback){
-            slaveRef.$loaded().then(function(object){
-                angular.forEach(object, function (childObject, key) {
-                    var childFBO = $firebaseObject(indexRef.child(key));
+            /**
+             *
+             * @param {FirebaseObject} slave
+             * @param {FirebaseObject} index
+             * @param {function} childCallback
+             */
+            function load(slave, index, childCallback) {
+                slave.$loaded().then(function (object) {
+                    angular.forEach(object, function (childObject, key) {
+                        var childFBO = $firebaseObject(index.child(key));
 
-                    childCallback(childFBO,key);
+                        if (childCallback) {
+                            childCallback(childFBO, key);
+                        }
 
+                    });
                 });
-            });
-        }
+            }
 
-        var globalOfferRef = fbutil.ref('offers');
+            var globalOfferRef = fbutil.ref('offers');
+            var globalSwaprequestsRef = fbutil.ref('swapRequests');
 
-        profile.$loaded().then(function(){
-            var ownOffersSlave = $firebaseObject(fbutil.ref('barters', profile.name,'offers'));
+            profile.$loaded().then(function () {
+                //FirebaseObject
+                var ownOffersSlave = $firebaseObject(fbutil.ref('barters', profile.name, 'offers'));
 
-
-            load(ownOffersSlave,globalOfferRef,function(offer,key){
-                $scope.offers[key] = offer;
-                var swapRequestsSlave = $firebaseObject(fbutil.ref('barters', profile.name,'offers',key,'swapRequests'));
-                load(swapRequestsSlave,globalOfferRef,function(offer,key){
-
+                load(ownOffersSlave, globalOfferRef, function (offer, key) {
+                    $scope.offers[key] = offer;
                 });
+
             });
 
 
-            $scope.createSwapRequestsFacade2=function(offerId,offer){
-                return {
-                    visibleDialog:false,
-
-                    closeDialog:function(){
-                        this.visibleDialog=false;
-                    },
-                    showSwaps:function(){
-                        this.visibleDialog=true;
+            function logOnLoaded(firebaseObject, message) {
+                if (!message) {
+                    message = "";
+                }
+                console.log("waiting for " + message + ", key=" + firebaseObject);
+                firebaseObject.$loaded().then(
+                    function () {
+                        console.log("loaded " + message + ", key=" + firebaseObject);
                     }
+                );
+            }
 
+            /**
+             *
+             * @param {String} offerId
+             * @param {Offer} offer
+             * @returns {{visibleDialog: boolean, closeDialog: Function, showSwaps: Function}}
+             */
+            $scope.createSwapRequestsFacade2 = function (offerId, offer) {
+
+                return {
+                    swapRequests: null,
+
+                    visibleDialog: false,
+
+                    closeDialog: function () {
+                        this.visibleDialog = false;
+                    },
+                    toggleDialog: function () {
+                        this.visibleDialog = !this.visibleDialog;
+
+                        if (this.swapRequests == null) {
+                            //swap requests are promisses "live conneected" to the
+                            //firebase data - the dont need reload
+                            // we need to do it only once this
+                            this.swapRequests = swapDao.findSwapRequestsByOffer(offer);
+                            // mustw iterate thour value of dictionary!!!  not this-->   logOnLoaded(this.swapRequests);
+                        }
+
+
+                    }
 
                 }
             };
@@ -64,32 +111,26 @@
                 return 0;
             }
 
-        });
+
+            /*
 
 
+             $q.all( [profile.$loaded(),
+             offers.$loaded()] ).then(
+             function(){
+             console.log("loaded record", profile.$id, profile.name);
+             console.log(angular.toJson(offers));
+             }
+             );
+
+             // to take an action after the data loads, use $loaded() promise
+             profile.$loaded().then(function() {
+             console.log("loaded record", profile.$id, profile.name);
+             });
+             */
 
 
-        /*
-
-
-        $q.all( [profile.$loaded(),
-            offers.$loaded()] ).then(
-            function(){
-                console.log("loaded record", profile.$id, profile.name);
-                console.log(angular.toJson(offers));
-            }
-        );
-
-         // to take an action after the data loads, use $loaded() promise
-         profile.$loaded().then(function() {
-         console.log("loaded record", profile.$id, profile.name);
-         });
-         */
-
-
-
-
-    }
+        }
     ]);
 
 

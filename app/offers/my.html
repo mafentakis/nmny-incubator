@@ -1,5 +1,5 @@
 <h2 class="status good" ng-show="loggedIn" xmlns="http://www.w3.org/1999/html">Offers of {{profile.name}}.</h2>
-
+<input type="checkbox" ng-model="debug">debug
 
 <p class="status" ng-hide="loggedIn">Welcome. You are not <a href="#/login">logged in</a></p>
 
@@ -17,27 +17,47 @@
         <span ng-init="swapFacade=createSwapRequestsFacade2(offerId,offer)">
         <a href
            ng-if="keyCount(offer.swapRequests)>0"
-           ng-click="swapFacade.showSwaps()"> {{ keyCount(offer.swapRequests) }}
+           ng-click="swapFacade.toggleDialog()"> {{ keyCount(offer.swapRequests) }}
             Tauschangebote </a>|<a href ng-click="dropOffer(offerId)">X</a>
-        <span ng-if="swapFacade.visibleDialog">
-            <ul data-ng-repeat="(swapRequestProperties,swapRequestKey) in offer.swapRequests">
-                <li>{{swapRequestKey}}</li>
-            </ul>
-            <ul>
-                <li data-ng-repeat="(swapRequestId,swapRequestPropery) in  offer.swapRequests ">
-                    <p title="{{swapRequestPropery.swapRequest|json}}">
-                        {{swapRequestPropery.swapRequest.payFor.amount}} X
-                        {{swapRequestPropery.swapRequest.payFor.unit}}&nbsp;gegen<br>
 
-                        {{swapRequestPropery.swapRequest.payWith.amount}} X
-                        {{swapRequestPropery.swapRequest.payWith.unit}}
-                        {{offers[swapRequestPropery.swapRequest.payWith.offerId].title}}
-                        <br>
-                        <small>produkt:{{swapRequestPropery.swapRequest.payWith.offerId}}, Anfrage {{swapRequestId}},
-                            Erstellt: {{swapRequestPropery.created | date:'short'}}
-                            <a href
-                               ng-click="dropSwapRequest(swapRequestId,otherOfferId)">X</a>
+        <span ng-if="swapFacade.visibleDialog">
+             <pre ng-if="debug">
+            {{swapFacade.swapRequests|json}}
+        </pre>
+
+            <ul>
+                <li data-ng-repeat="(swapRequestId,swapRequestPropery) in  swapFacade.swapRequests ">
+                    <p title="{{swapRequestPropery.swapRequest|json}}">
+                        <small>Anfrage {{swapRequestId}},
+                            erstellt am: {{swapRequestPropery.created | date:'short'}}
                         </small>
+                        <br>
+
+                        {{swapRequestPropery.payFor.offer.offeredBy}} <b
+                            ng-if="swapRequestPropery.payFor.offer.offeredBy==profile.name">(Du)</b> bietet
+                        <i> {{swapRequestPropery.payFor.amount}} X
+                            {{swapRequestPropery.payFor.unit}}</i>
+                        {{swapRequestPropery.payFor.offer.title}} &nbsp;gegen<br>
+
+                        {{swapRequestPropery.payWith.offer.offeredBy}}'s <b
+                            ng-if="swapRequestPropery.payWith.offer.offeredBy==profile.name">(Du)</b>
+                        <i>{{swapRequestPropery.payWith.amount}} X
+                            {{swapRequestPropery.payWith.unit}}</i>
+                        {{swapRequestPropery.payWith.offer.title}}
+                        <small ng-if="debug">produkt:{{swapRequestPropery.payWith.offerId}}, Anfrage {{swapRequestId}},
+                            Erstellt: {{swapRequestPropery.created | date:'short'}}
+                        </small>
+                        <br>
+                        <span ng-if="swapRequestPropery.offeredBy==profile.name">
+                             <a href
+                                ng-click="dropSwapRequest(swapRequestId,otherOfferId)">zurücknehmen</a>&nbsp;</span>
+                             <span>
+                             <a href
+                                ng-click="dropSwapRequest(swapRequestId,otherOfferId)">Tausch annehmen</a>&nbsp;</span>
+                             <span ng-if="swapRequestPropery.offeredBy!=profile.name">
+                             <a href
+                                ng-click="dropSwapRequest(swapRequestId,otherOfferId)">im Angebot
+                                 aufnehmen</a>&nbsp;</span>
                     </p>
 
                 </li>
@@ -45,7 +65,6 @@
 
         </span>
         </span>
-
 
 
     </li>

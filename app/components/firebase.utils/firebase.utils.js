@@ -4,6 +4,10 @@ angular.module('firebase.utils', ['firebase', 'myApp.config'])
    .factory('fbutil', ['$window', 'FBURL', '$q', function($window, FBURL, $q) {
       "use strict";
 
+        /**
+         *
+         * @type {{handler: Function, defer: Function, ref: firebaseRef}}
+         */
       var utils = {
         // convert a node or Firebase style callback to a future
         handler: function(fn, context) {
