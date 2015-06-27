@@ -23,7 +23,6 @@
             $scope.offers = {};
 
             /**
-             *
              * @param {FirebaseObject} slave
              * @param {FirebaseObject} index
              * @param {function} childCallback
@@ -80,6 +79,10 @@
 
                     visibleDialog: false,
 
+                    dropSwapRequest:function(swapRequest){
+                        swapDao.dropSwapRequest(swapRequest);
+                    },
+
                     closeDialog: function () {
                         this.visibleDialog = false;
                     },
@@ -101,6 +104,8 @@
             };
 
 
+
+
             /*      offersO.$loaded().then(function(){
              });*/
 
@@ -110,6 +115,22 @@
                 }
                 return 0;
             }
+
+
+
+            /**
+             * drops Offers and all references
+             * @param offerId
+             */
+            $scope.dropOffer = function (offerId) {
+                if (!confirm("soll diese Offer wirklich gelsöcht werden?")){
+                    return;
+                }
+
+                swapDao.dropOffer(offerId,profile.name);
+
+
+            };
 
 
             /*

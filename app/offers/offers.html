@@ -24,17 +24,17 @@
                 keine Tauschanfragen - klicke auf "anbieten", um eine zu erstellen
             </p>
             <ul>
-                <li data-ng-repeat="(swapRequestId,swapRequestPropery) in otherOffer.swapRequests ">
-                    <p title="{{swapRequestPropery.swapRequest|json}}">
-                        {{swapRequestPropery.swapRequest.payFor.amount}} X
-                        {{swapRequestPropery.swapRequest.payFor.unit}}&nbsp;gegen<br>
+                <li data-ng-repeat="(swapRequestId,swapRequest) in otherOffer.swapRequests ">
+                    <p title="{{swapRequest.swapRequest|json}}">
+                        {{swapRequest.swapRequest.payFor.amount}} X
+                        {{swapRequest.swapRequest.payFor.unit}}&nbsp;gegen<br>
 
-                        {{swapRequestPropery.swapRequest.payWith.amount}} X
-                        {{swapRequestPropery.swapRequest.payWith.unit}}
-                        {{offers[swapRequestPropery.swapRequest.payWith.offerId].title}}
+                        {{swapRequest.swapRequest.payWith.amount}} X
+                        {{swapRequest.swapRequest.payWith.unit}}
+                        {{offers[swapRequest.swapRequest.payWith.offerId].title}}
                         <br>
-                        <small>produkt:{{swapRequestPropery.swapRequest.payWith.offerId}}, Anfrage {{swapRequestId}},
-                            Erstellt: {{swapRequestPropery.created | date:'short'}}
+                        <small>produkt:{{swapRequest.swapRequest.payWith.offerId}}, Anfrage {{swapRequestId}},
+                            Erstellt: {{swapRequest.created | date:'short'}}
                             <a href
                                ng-click="dropSwapRequest(swapRequestId,otherOfferId)">X</a>
                         </small>

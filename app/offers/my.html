@@ -25,39 +25,42 @@
             {{swapFacade.swapRequests|json}}
         </pre>
 
-            <ul>
-                <li data-ng-repeat="(swapRequestId,swapRequestPropery) in  swapFacade.swapRequests ">
-                    <p title="{{swapRequestPropery.swapRequest|json}}">
-                        <small>Anfrage {{swapRequestId}},
-                            erstellt am: {{swapRequestPropery.created | date:'short'}}
-                        </small>
+            <ul data-ng-repeat="(swapRequestId,swapRequest) in  swapFacade.swapRequests ">
+                <li  ng-if="swapRequest.payFor || swapRequest.payWith" >
+                    <p title="{{swapRequest|json}}">
+                        Anfrage von {{swapRequest.offeredBy}},
+                        erstellt am: {{swapRequest.created | date:'short'}}
+                        <small>{{swapRequestId}}</small>
                         <br>
 
-                        {{swapRequestPropery.payFor.offer.offeredBy}} <b
-                            ng-if="swapRequestPropery.payFor.offer.offeredBy==profile.name">(Du)</b> bietet
-                        <i> {{swapRequestPropery.payFor.amount}} X
-                            {{swapRequestPropery.payFor.unit}}</i>
-                        {{swapRequestPropery.payFor.offer.title}} &nbsp;gegen<br>
+                        {{swapRequest.payFor.offer.offeredBy}} <b
+                            ng-if="swapRequest.payFor.offer.offeredBy==profile.name">(Du)</b> bietet
+                        <i> {{swapRequest.payFor.amount}} X
+                            {{swapRequest.payFor.unit}}</i>
+                        {{swapRequest.payFor.offer.title}} &nbsp;gegen<br>
 
-                        {{swapRequestPropery.payWith.offer.offeredBy}}'s <b
-                            ng-if="swapRequestPropery.payWith.offer.offeredBy==profile.name">(Du)</b>
-                        <i>{{swapRequestPropery.payWith.amount}} X
-                            {{swapRequestPropery.payWith.unit}}</i>
-                        {{swapRequestPropery.payWith.offer.title}}
-                        <small ng-if="debug">produkt:{{swapRequestPropery.payWith.offerId}}, Anfrage {{swapRequestId}},
-                            Erstellt: {{swapRequestPropery.created | date:'short'}}
+                        {{swapRequest.payWith.offer.offeredBy}}'s <b
+                            ng-if="swapRequest.payWith.offer.offeredBy==profile.name">(Du)</b>
+                        <i>{{swapRequest.payWith.amount}} X
+                            {{swapRequest.payWith.unit}}</i>
+                        {{swapRequest.payWith.offer.title}}
+                        <small ng-if="debug">produkt:{{swapRequest.payWith.offerId}}, Anfrage {{swapRequestId}},
+                            Erstellt: {{swapRequest.created | date:'short'}}
                         </small>
                         <br>
-                        <span ng-if="swapRequestPropery.offeredBy==profile.name">
+                        <span ng-if="swapRequest.offeredBy==profile.name">
                              <a href
-                                ng-click="dropSwapRequest(swapRequestId,otherOfferId)">zurücknehmen</a>&nbsp;</span>
-                             <span>
+                                ng-click="swapFacade.dropSwapRequest(swapRequest)">Anfrage löschen</a>&nbsp;
+                        </span>
+                        <span>
                              <a href
-                                ng-click="dropSwapRequest(swapRequestId,otherOfferId)">Tausch annehmen</a>&nbsp;</span>
-                             <span ng-if="swapRequestPropery.offeredBy!=profile.name">
+                                ng-click="swapFacade.dropSwapRequests()">Tausch annehmen</a>&nbsp;
+                        </span>
+                        <span ng-if="swapRequest.offeredBy!=profile.name">
                              <a href
-                                ng-click="dropSwapRequest(swapRequestId,otherOfferId)">im Angebot
-                                 aufnehmen</a>&nbsp;</span>
+                                ng-click="swapFacade.dropSwapRequests()">im Angebot
+                                 aufnehmen</a>&nbsp;
+                        </span>
                     </p>
 
                 </li>
