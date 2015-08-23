@@ -38,6 +38,25 @@ angular.module('daos', ['firebase.utils'])
          * @param {function} childCallback
          */
 
+
+        /**
+         * gets the (first) key in a structure:
+         * {
+         *   9387219734321431924 : {}
+         * }
+         * @param object
+         */
+        function getKey(object){
+            var keys = Object.keys(object);
+            if (keys && keys[0]){
+                return keys[0];
+            }
+            else {
+                return null;
+            }
+
+        }
+
         /**
          *
          * @param {string} swapRequestId
@@ -48,9 +67,11 @@ angular.module('daos', ['firebase.utils'])
             var swapRequest =$firebaseObject(globalSwapRequestRef.child(swapRequestId));
 
             swapRequest.$loaded().then(function () {
-                var offerId = swapRequest.payFor.offerId;
+                var offerId = getKey(swapRequest.payFor);
                 swapRequest.payFor.offer = $firebaseObject(globalOffersRef.child(offerId));
-                offerId = swapRequest.payWith.offerId;
+                swapRequest.payFor.swap = swapRequest.payFor[offerId];
+
+                offerId = getKey(swapRequest.payWith);
                 swapRequest.payWith.offer = $firebaseObject(globalOffersRef.child(offerId));
             });
             return swapRequest;
@@ -92,8 +113,8 @@ angular.module('daos', ['firebase.utils'])
          */
         this.dropSwapRequest = function (swapRequest) {
             dropReference(globalSwapRequestRef, swapRequest.$id);
-            dropReference(globalOffersRef.child(swapRequest.payFor.offerId).child("swapRequests"), swapRequest.$id);
-            dropReference(globalOffersRef.child(swapRequest.payWith.offerId).child("swapRequests"), swapRequest.$id);
+            dropReference(globalOffersRef.child(swapRequest.payFor.$id).child("swapRequests"), swapRequest.$id);
+            dropReference(globalOffersRef.child(swapRequest.payWith.$id).child("swapRequests"), swapRequest.$id);
         };
 
 
