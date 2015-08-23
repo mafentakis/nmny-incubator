@@ -5,7 +5,7 @@ angular.module('myApp.config', [])
 
   // version of this seed app is compatible with angularFire 1.0.0
   // see tags for other versions: https://github.com/firebase/angularFire-seed/tags
-  .constant('version', '1.0.0')
+  .constant('version', '1.0.1')
 
   // where to redirect users if they need to authenticate (see security.js)
   .constant('loginRedirectPath', '/login')

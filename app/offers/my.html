@@ -7,7 +7,7 @@
 <ul data-ng-repeat="(offerId, offer) in offers">
 
 
-    <li title="{{offer|json}}">{{offer.title}}
+    <li ng-if="offer.title" title="{{offer|json}}">{{offer.title}}
 
         <small> {{offerId}} von:{{offer.offeredBy}}<span ng-show="offer.alien">(alien)</span></small>
         <small ng-if="offer.unit"><br>Einheit: {{offer.unit}}</small>
@@ -21,12 +21,12 @@
             Tauschangebote </a>|<a href ng-click="dropOffer(offerId)">X</a>
 
         <span ng-if="swapFacade.visibleDialog">
-             <pre ng-if="debug">
+          <pre ng-if="debug">
             {{swapFacade.swapRequests|json}}
-        </pre>
+          </pre>
 
             <ul data-ng-repeat="(swapRequestId,swapRequest) in  swapFacade.swapRequests ">
-                <li  ng-if="swapRequest.payFor || swapRequest.payWith" >
+                <li ng-if="swapRequest.payFor || swapRequest.payWith">
                     <p title="{{swapRequest|json}}">
                         Anfrage von {{swapRequest.offeredBy}},
                         erstellt am: {{swapRequest.created | date:'short'}}
