@@ -6,7 +6,8 @@
 <div>
     <ul data-ng-repeat="(otherOfferId, otherOffer) in otherOffers">
         <li title=":{{otherOffer|json}}">
-            {{otherOffer.title}}
+            {{otherOffer.title}}<br>
+            <small> {{otherOffer.description}}</small>
             <small><br>Einheit: {{otherOffer.unit}}</small>
             <small>{{otherOfferId}}, von:{{otherOffer.offeredBy}}</small>
 

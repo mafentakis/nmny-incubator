@@ -1,4 +1,4 @@
-<h2 class="status good" ng-show="loggedIn" xmlns="http://www.w3.org/1999/html">Offers of {{profile.name}}.</h2>
+<h2 class="status good" ng-show="loggedIn" >Offers of {{profile.name}}.</h2>
 <input type="checkbox" ng-model="debug">debug
 
 <p class="status" ng-hide="loggedIn">Welcome. You are not <a href="#/login">logged in</a></p>
@@ -11,7 +11,7 @@
 
         <small> {{offerId}} von:{{offer.offeredBy}}<span ng-show="offer.alien">(alien)</span></small>
         <small ng-if="offer.unit"><br>Einheit: {{offer.unit}}</small>
-        <i ng-if="offer.description"><br>{{offer.description}}</i>
+        <i ng-if="offer.description"><br>{{offer.description}}</i><br>
 
 
         <span ng-init="swapFacade=createSwapRequestsFacade2(offerId,offer)">
