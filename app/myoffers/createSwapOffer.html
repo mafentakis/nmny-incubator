@@ -1,0 +1,36 @@
+
+<!--
+<div class="alert alert-info" role="alert">
+    <button type="button" class="close" ng-click="swapRequestFacade.close()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>ich biete dafür:</strong>
+    <form>
+        <div class="checkbox" data-ng-repeat="productOffer in products"
+             ng-if="possibleProduct.offeredBy!=product.offeredBy">
+            <label>
+                <input type="checkbox" ng-model="swapRequestFacade.payWith.productId[$index]" value="{{productOffer.id}}">
+
+
+                <input type="checkbox" ng-model="answers[$index]"
+                       ng-change="swapRequestFacade.payWith.productId[$index] =answers[$index]? productOffer.id:null " />{{productOffer.title}}
+
+            </label>
+        </div>
+        <button ng-click="swapRequestFacade.save()">OK</button>
+    </form>
+</div>
+-->
+
+
+<strong>ich biete dafür:</strong>
+<div class="list-group">
+    <a href class="list-group-item "
+       ng-click="answers[$index]=!answers[$index];swapRequestFacade.payWith.productId[$index] =answers[$index]? productOffer.id:null"
+        ng-repeat="productOffer in products"
+        ng-if="possibleProduct.offeredBy!=product.offeredBy">
+        <span class="pull-right glyphicon glyphicon-ok-sign" ng-if="answers[$index]"></span>
+        <div class="list-group-item-heading">{{productOffer.title}}</div>
+        <small class="list-group-item-text">{{productOffer.description}}</small>
+    </a>
+</div>
+<button ng-click="swapRequestFacade.save()">OK</button>
+

@@ -5,8 +5,7 @@ angular.module('myApp', [
     'myApp.config',
     'myApp.security',
     'myApp.home',
-    'myApp.offers',
-    'myApp.ownOffers',
+//    'myApp.ownOffers',
     'myApp.account',
     'myApp.login'
   ])

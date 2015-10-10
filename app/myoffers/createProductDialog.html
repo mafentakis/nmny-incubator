@@ -1,29 +1,27 @@
 
-<form ng-init="newOffer={}">
+<form ng-init="newProduct={}">
     {{statusText}}
     <fieldset>
         <label>
             <span>title</span>
-            <input type="text" size="100" ng-model="newOffer.title"/>
+            <input type="text" size="100" ng-model="newProduct.title"/>
         </label>
         <label>
             <span>Beschreibung</span>
-            <textarea cols="100" rows="4" ng-model="newOffer.description"></textarea>
+            <textarea cols="100" rows="4" ng-model="newProduct.description"></textarea>
         </label>
         <label>
             <span>Einheit</span>
-            <input type="text" size="100" ng-model="newOffer.unit" />
+            <input type="text" size="100" ng-model="newProduct.unit" />
             <ul>
                 <li>Tanzunterricht,Musikunterricht: 1 Einheit= 1 Stunde</li>
                 <li>Motorradmiete: 1 Einheit = 1 Tag</li>
             </ul>
-
         </label>
-        <button ng-click="createNewOffer(newOffer,status)">createNew</button>
+        <button ng-click="createNewOffer(newProduct,status)">createNew</button>
 
         <p class="error" ng-show="err">{{err}}</p>
 
         <p class="good" ng-show="msg">{{msg}}</p>
     </fieldset>
 </form>
-

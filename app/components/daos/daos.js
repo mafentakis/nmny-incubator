@@ -47,6 +47,9 @@ angular.module('daos', ['firebase.utils'])
          * @param object
          */
         function getKey(object){
+            if (object==null){
+                return null;
+            }
             var keys = Object.keys(object);
             if (keys && keys[0]){
                 return keys[0];

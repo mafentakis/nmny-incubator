@@ -1,28 +1,87 @@
-
-<div class="panel-heading">
-    <h4>{{offer.title}}<br>
-        <small>{{offerId}} {{offer.created | date:'short'}}</small>
-    </h4>
-</div>
-<div class="panel-body">
-
-    <p ng-if="offer.description">{{offer.description}} </p>
-    <img class="img-responsive img-thumbnail" ng-if="offer.images[0]" ng-src="{{offer.images[0]}}">
-    <hr>
-    <p>
-        <span class="label label-primary" ng-show="offer.alien">{{offer.offeredBy}}</span>
-        <a href
-           ng-init="countProposals=countSwapProposals(offer)"
-           ng-show="countProposals>0"
-           ng-click="toogleSwpapProposalsDialog(offerId)"
-                > Tauschangebote <span class="badge">{{countProposals}}</span></a>
-    </p>
-
-    <div ng-show="swapProposalsDialogShown[offerId]">
-        <ul ng-if="offer.internalTradedFor" data-ng-repeat="(tradedByofferId, tradedByOffer) in offer.internalTradedFor">
-            <li>{{tradedByOffer.offer.title}}<small> von {{tradedByOffer.offer.offeredBy}}</small></li>
-        </ul>
+<div ng-init="showJson=false;swapRequestFacade={}">
+    <div class="panel-heading">
+        <a href class="pull-right" ng-click="showJson=!showJson">debug</a>
+        <h4> {{$index}}. {{product.title}} <br>
+            <small> {{offerId}} von {{product.offeredBy}}<span ng-show="offer.alien">(alien)</span></small>
+        </h4>
     </div>
+    <div class="panel-body">
+
+        <p ng-if="product.description">{{product.description}} </p>
+        <img class="img-responsive img-thumbnail" ng-if="product.images[0]"
+             err-src="images/png/avatar.png"
+             ng-src="data:image/png;base64,{{product.images[0]}}">
+        <hr>
+        <p>
+            <span class="label label-primary" ng-show="product.alien">{{product.offeredBy}}</span>
+            <a href
+               ng-show="product.incomingSwapRequests.length>0"
+               ng-click="toogleSwpapProposalsDialog(offerId)"
+                    > eingehend <span class="badge">{{product.incomingSwapRequests.length}}</span></a>
+
+            <a href
+               ng-show="product.outgoingSwapRequests.length>0"
+               ng-click="toogleSwpapProposalsDialog(offerId)"
+                    > ausgehend <span class="badge">{{product.outgoingSwapRequests.length}}</span></a>
+
+            <a href><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
+
+            <a  class="btn btn-default" aria-label="Left Align">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            </a>
+
+            <a href class="pull-right" ng-hide="swapRequestFacade.visibleDialog" ng-click="swapRequestFacade=createSwapRequestFacade(product)">tausch
+                vorschlagen</a>
+
+        </p>
 
 
+        <div ng-show="showJson">
+            {{product|json}}
+        </div>
+
+
+              <div ng-if="swapRequestFacade.visibleDialog" ng-include="'myoffers/createSwapOffer.html'"></div>
+
+            <!--
+             <h4>laufende Anfragen</h4>
+
+             <p ng-if="empty(otherOffer.swapRequests)">
+                 keine Tauschanfragen - klicke auf "anbieten", um eine zu erstellen
+             </p>
+             <ul>
+                 <li data-ng-repeat="(swapRequestId,swapRequest) in otherOffer.swapRequests ">
+                     <p title="{{swapRequest.swapRequest|json}}">
+                         {{swapRequest.swapRequest.payFor.amount}} X
+                         {{swapRequest.swapRequest.payFor.unit}}&nbsp;gegen<br>
+
+                         {{swapRequest.swapRequest.payWith.amount}} X
+                         {{swapRequest.swapRequest.payWith.unit}}
+                         {{offers[swapRequest.swapRequest.payWith.offerId].title}}
+                         <br>
+                         <small>produkt:{{swapRequest.swapRequest.payWith.offerId}}, Anfrage {{swapRequestId}},
+                             Erstellt: {{swapRequest.created | date:'short'}}
+                             <a href
+                                ng-click="dropSwapRequest(swapRequestId,otherOfferId)">X</a>
+                         </small>
+                     </p>
+
+                 </li>
+             </ul>
+             <button ng-click="swapRequestFacade.visibleDialog=false">schließen</button>
+             -->
+            <!--
+            <h4>angenommene</h4>
+            <ul data-ng-repeat="(subOfferId,subOfferProperties) in otherOffer.internalTradedFor ">
+                <li ng-show="offers[subOfferId]!=null">{{subOfferId}}**{{offers[subOfferId].title}} <a href
+                                                                                                       ng-click="dropSwapProposal(otherOfferId,subOfferId)">entfernen</a>
+                </li>
+            </ul>
+
+            <hr>
+
+            <br>
+-->
+
+    </div>
 </div>

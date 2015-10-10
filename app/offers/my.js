@@ -73,7 +73,6 @@
              * @returns {{visibleDialog: boolean, closeDialog: Function, showSwaps: Function}}
              */
             $scope.createSwapRequestsFacade2 = function (offerId, offer) {
-
                 return {
                     swapRequests: null,
 
@@ -96,10 +95,7 @@
                             this.swapRequests = swapDao.findSwapRequestsByOffer(offer);
                             // mustw iterate thour value of dictionary!!!  not this-->   logOnLoaded(this.swapRequests);
                         }
-
-
                     }
-
                 }
             };
 
